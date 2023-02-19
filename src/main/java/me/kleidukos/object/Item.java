@@ -1,26 +1,34 @@
 package me.kleidukos.object;
 
+import java.util.Map;
+
 public class Item{
     private final int id;
-    private final String name;
+    private final Map<String, String> names;
     private final int grade;
     private final int level;
-    private Stats stats;
+    private ItemStats stats;
     private ItemDetail detail;
 
-    public Item(int id, String name, int grade, int level) {
+    public Item(int id, Map<String, String> names, int grade, int level) {
         this.id = id;
-        this.name = name;
+        this.names = names;
         this.grade = grade;
         this.level = level;
+
     }
 
     public int getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public Map<String, String> getName() {
+        return names;
+    }
+
+    public void addName(String local, String name){
+        if(!names.containsKey(local))
+            names.put(local, name);
     }
 
     public int getGrade() {
@@ -31,7 +39,7 @@ public class Item{
         return level;
     }
 
-    public Stats getStats() {
+    public ItemStats getStats() {
         return stats;
     }
 
@@ -39,19 +47,19 @@ public class Item{
         return detail;
     }
 
-    public void setStats(Stats stats) {
+    public void setStats(ItemStats stats) {
         this.stats = stats;
     }
 
-    public void setDetail(ItemDetail detail) {
-        this.detail = new ItemDetail(level, detail.type(), detail.bound(), detail.description(), detail.eDescription(), detail.durability(), detail.weight());
+    public void createDetails(float weight, float durability){
+        this.detail = new ItemDetail(level, weight, durability);
     }
 
     @Override
     public String toString() {
         return "Item{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + names.toString() + '\'' +
                 ", grade=" + grade +
                 ", level=" + level +
                 ", stats=" + stats +

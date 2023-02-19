@@ -1,6 +1,6 @@
 package me.kleidukos.object;
 
-public record Stats(String attack, String defense, String accuracy, String evasion, String damageReduction) {
+public record ItemStats(String attack, String defense, String accuracy, String evasion, String damageReduction) {
     @Override
     public String toString() {
         return "Stats{" +
