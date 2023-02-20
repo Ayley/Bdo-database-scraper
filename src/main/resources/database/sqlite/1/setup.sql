@@ -1,22 +1,22 @@
-CREATE TABLE IF NOT EXIST item (
+CREATE TABLE IF NOT EXISTS 'item' (
     id INTEGER PRIMARY KEY,
     name TEXT,
     grade INTEGER
 );
 
-CREATE TABLE IF NOT EXIST item_detail (
+CREATE TABLE IF NOT EXISTS 'item_detail' (
     id INTEGER PRIMARY KEY,
     level INTEGER,
     type TEXT,
     bound TEXT,
     description TEXT,
-    eDescription TEXT,
-    durability TEXT,
-    weight TEXT,
+    e_description TEXT,
+    durability float,
+    weight float,
     FOREIGN KEY(id) REFERENCES item(id)
     );
 
-CREATE TABLE IF NOT EXIST item_stat (
+CREATE TABLE IF NOT EXISTS 'item_stat' (
     id INTEGER PRIMARY KEY,
     attack TEXT,
     defense TEXT,
