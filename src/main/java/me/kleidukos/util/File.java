@@ -24,6 +24,17 @@ public class File {
             return "";
     }
 
+    public static String getNameRegex(String data) {
+        final String regex = "</span>(.*?)</b>";
+        var r = Pattern.compile(regex, Pattern.MULTILINE);
+        var m = r.matcher(data);
+
+        if (m.find())
+            return m.group(1);
+        else
+            return "";
+    }
+
     public static String getItemTypeRegex(String data) {
         final String regex = "<td class=\"titles_cell\">(.*?)<";
         var r = Pattern.compile(regex);
@@ -47,7 +58,7 @@ public class File {
     }
     public static String getDescriptionContentRegex(String data) {
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(data), null);
-        final var regex = "<hr class=\"tooltiphr\">.(. [Beschreibung|Description|Описание|Descripción|Descrição|説明|설명|说明|說明|คำอธิบาย|Açıklama|Penjelasan].*?)<hr class=\"tooltiphr\">";
+        final var regex = "<hr class=\"tooltiphr\">.. [Beschreibung|Description|Описание|Descripción|Descrição|説明|설명|说明|說明|คำอธิบาย|Açıklama|Penjelasan].*?<br>(.*?)<hr class=\"tooltiphr\">";
         final var pattern = Pattern.compile(regex, Pattern.DOTALL);
         final var matcher = pattern.matcher(data);
 
