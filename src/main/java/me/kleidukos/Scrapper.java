@@ -82,7 +82,7 @@ class Scrapper {
         var name = content.select("div[id=item_name]").text().trim();
 
         item.getItem().addName(local, name);
-        item.getItemInfo().addInfo(local, infos);
+        item.getMetadata().getInfo().addInfo(local, infos);
     }
 
     private List<DetailedItem> upgradeItems(List<BaseItem> items, String local, int waitTimeForNext) throws InterruptedException, IOException {
@@ -108,8 +108,8 @@ class Scrapper {
 
         var detailedItem = new DetailedItem(item);
 
-        detailedItem.setItemInfo(info);
-        detailedItem.setItemProperties(stats);
+        detailedItem.getMetadata().setInfo(info);
+        detailedItem.getMetadata().setProperties(stats);
 
 
         if (!item.hasLocalName(local))

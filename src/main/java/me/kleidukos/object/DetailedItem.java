@@ -4,47 +4,26 @@ public class DetailedItem {
 
     private final BaseItem item;
 
-    private ItemInfo itemInfo;
-
-    private ItemProperties itemProperties;
+    private ItemMetadata metadata;
 
     public DetailedItem(BaseItem item) {
         this.item = item;
+        this.metadata = new ItemMetadata();
     }
 
     public BaseItem getItem() {
         return item;
     }
 
-    public ItemInfo getItemInfo() {
-        return itemInfo;
-    }
-
-    public ItemProperties getItemProperties() {
-        return itemProperties;
-    }
-
-    public void setItemInfo(ItemInfo itemInfo) {
-        if (this.itemInfo != null)
-            return;
-
-        itemInfo.setLevel(itemInfo.getLevelRestriction());
-        this.itemInfo = itemInfo;
-    }
-
-    public void setItemProperties(ItemProperties itemProperties) {
-        if (this.itemProperties != null)
-            return;
-
-        this.itemProperties = itemProperties;
+    public ItemMetadata getMetadata() {
+        return metadata;
     }
 
     @Override
     public String toString() {
         return "DetailedItem{" +
                 "item=" + item +
-                ", itemInfo=" + itemInfo +
-                ", itemProperties=" + itemProperties +
+                ", metadata=" + metadata +
                 '}';
     }
 }

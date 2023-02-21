@@ -27,6 +27,10 @@ public class BDOCodexScrapper {
         for (var local : Arrays.copyOfRange(locals, 1, locals.length)) {
             Scrapper.updateItemsToLocal(items, local);
         }
+
+        for (var item : items){
+            itemTable.insertOrUpdate(item);
+        }
     }
 
     private void setupTable() {
@@ -42,8 +46,6 @@ public class BDOCodexScrapper {
 
         SqlUpdater.builder(dataSource, SqLite.get()).execute();
     }
-
-
 
     public static void main(String[] args) throws IOException, InterruptedException, SQLException {
         new BDOCodexScrapper();
