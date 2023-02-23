@@ -1,4 +1,4 @@
-package me.kleidukos.object;
+package me.kleidukos.object.item;
 
 public class ItemInfos {
 

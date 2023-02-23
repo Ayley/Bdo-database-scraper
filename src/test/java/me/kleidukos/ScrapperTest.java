@@ -1,7 +1,7 @@
 package me.kleidukos;
 
 import com.google.gson.Gson;
-import me.kleidukos.object.BaseItem;
+import me.kleidukos.object.item.BaseItem;
 import org.junit.Test;
 
 import java.io.IOException;

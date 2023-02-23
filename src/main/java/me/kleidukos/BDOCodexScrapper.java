@@ -1,10 +1,12 @@
 package me.kleidukos;
 
+import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariDataSource;
 import de.chojo.sadu.databases.SqLite;
 import de.chojo.sadu.datasource.DataSourceCreator;
 import de.chojo.sadu.updater.SqlUpdater;
 import me.kleidukos.tables.ItemTable;
+import me.kleidukos.util.ScrapperCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,15 +24,22 @@ public class BDOCodexScrapper {
         setupDatabase();
         setupTable();
 
+        updateItems(null);
+    }
+
+    public void updateItems(ScrapperCallback callback) throws IOException, InterruptedException {
         var items = Scrapper.loadBaseItems("de");
 
         for (var local : Arrays.copyOfRange(locals, 1, locals.length)) {
-            Scrapper.updateItemsToLocal(items, local);
+          //  Scrapper.updateItemsToLocal(items, local);
         }
 
         for (var item : items){
             itemTable.insertOrUpdate(item);
         }
+
+        if(callback != null)
+            callback.finishedUpdateBasicItems(items);
     }
 
     private void setupTable() {

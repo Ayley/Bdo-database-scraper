@@ -1,4 +1,4 @@
-package me.kleidukos.object;
+package me.kleidukos.object.item;
 
 public record ItemProperties(int minAttack, int maxAttack, int defense, int accuracy, int evasion, int hiddenEvasion, int damageReduction, int hiddenDamageReduction) {
 
