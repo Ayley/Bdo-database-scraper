@@ -25,6 +25,11 @@ public class ItemInfo {
             this.infos.put(local, infos);
     }
 
+    public void setInfo(String local, ItemInfos infos){
+        if(this.infos.containsKey(local))
+            this.infos.replace(local, infos);
+    }
+
     protected void setLevel(int levelRestriction){
         this.levelRestriction = levelRestriction;
     }

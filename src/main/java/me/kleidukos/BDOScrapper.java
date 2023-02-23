@@ -13,7 +13,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -42,8 +47,8 @@ public final class BDOScrapper implements ScrapperApi {
                 List<BaseItem> tempItems = null;
                 try {
                     tempItems = parseAllBaseItems(local);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    continue;
                 }
 
                 if (items == null) {
@@ -51,8 +56,10 @@ public final class BDOScrapper implements ScrapperApi {
                     continue;
                 }
 
-                for (int i = 0; i < items.size(); i++) {
-                    items.get(i).addName(local, tempItems.get(i).getName(local));
+                for (var i : items) {
+                    var it = tempItems.stream().filter(tp -> tp.getId() == i.getId()).findFirst();
+
+                    it.ifPresent(i::merge);
                 }
             }
 
@@ -117,11 +124,10 @@ public final class BDOScrapper implements ScrapperApi {
 
     private void insertOrUpdateItemsIntoDatabase(List<BaseItem> items) {
         for (var item : items) {
-            databaseApi.getBaseItemById(item.getId()).thenAccept(dbItem -> {
-                dbItem.ifPresent(item::merge);
-
-               itemTable.insertOrUpdate(item);
-            });
+            //databaseApi.getBaseItemById(item.getId()).thenAccept(dbItem -> {
+            //    dbItem.ifPresent(item::merge);
+               itemTable.insertBaseItem(item);
+            //});
         }
     }
 
@@ -136,12 +142,17 @@ public final class BDOScrapper implements ScrapperApi {
     ////////////////////////////////////////////////////////////////////////
 
     private List<BaseItem> parseAllBaseItems(String local) throws IOException {
+        System.out.println(local);
         var list = new ArrayList<BaseItem>();
 
-        for (var data : getRawItemsData(local)) {
-            var item = parseBaseItem(data, local);
+        try {
+            for (var data : getRawItemsData(local)) {
+                var item = parseBaseItem(data, local);
 
-            list.add(item);
+                list.add(item);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         return list;
     }
@@ -162,8 +173,8 @@ public final class BDOScrapper implements ScrapperApi {
     }
 
     //Get raw basic data
-    private List<List<Object>> getRawItemsData(String local) throws IOException {
-        var content = Jsoup.connect(getItemsUrl(local)).get().html();
+    private List<List<Object>> getRawItemsData(String local) throws IOException, InterruptedException {
+        var content = getContent(getItemsUrl(local));
         var typeToken = new TypeToken<Map<String, List<List<Object>>>>() {
         }.getType();
         Map<String, List<List<Object>>> data = new Gson().fromJson(content, typeToken);
@@ -240,6 +251,13 @@ public final class BDOScrapper implements ScrapperApi {
         var description = Jsoup.parse(ScrapperRegex.getDescriptionContentRegex(document.html())).text().trim();
         var effectDescription = document.select("div[id=edescription]").text().trim();
         return new ItemInfos(itemType, bound, description, effectDescription);
+    }
+
+    private String getContent(String url) throws IOException, InterruptedException {
+        var client = HttpClient.newHttpClient();
+        var request = HttpRequest.newBuilder(URI.create(url)).GET().build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
     }
 
     //Item url for specific data

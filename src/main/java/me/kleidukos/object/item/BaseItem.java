@@ -70,6 +70,8 @@ public class BaseItem {
             if(!names.containsKey(entry.getKey())) {
                 names.put(entry.getKey(), entry.getValue());
                 locals.add(entry.getKey());
+            }else {
+                setName(entry.getKey(), entry.getValue());
             }
         }
     }

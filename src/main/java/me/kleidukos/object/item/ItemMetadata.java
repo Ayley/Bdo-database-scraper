@@ -35,6 +35,8 @@ public class ItemMetadata {
         for (var entry : other.getMetadata().getDetails().getInfos().entrySet()) {
             if(!getDetails().getInfos().containsKey(entry.getKey())){
                 getDetails().addInfo(entry.getKey(), entry.getValue());
+            }else {
+                getDetails().setInfo(entry.getKey(), entry.getValue());
             }
         }
     }

@@ -1,8 +1,8 @@
-CREATE TABLE IF NOT EXISTS `item_ids` (
-    id INTEGER PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS 'item_ids' (
+    id INTEGER PRIMARY KEY
 );
 
-CREATE TABLE IF NOT EXISTS `languages` (
+CREATE TABLE IF NOT EXISTS 'translations' (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     item_id INTEGER,
     language_key INTEGER,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `languages` (
     FOREIGN KEY(item_id) REFERENCES item(id)
 );
 
-CREATE TABLE IF NOT EXISTS `metadata` (
+CREATE TABLE IF NOT EXISTS 'metadata' (
   id INTEGER PRIMARY KEY,
   item_id INTEGER,
   meta_tag INTEGER,

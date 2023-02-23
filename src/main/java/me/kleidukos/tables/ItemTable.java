@@ -17,34 +17,40 @@ public class ItemTable extends QueryFactory implements DatabaseApi {
         super(dataSource);
     }
 
-    public void insertOrUpdate(BaseItem item) {
-        var gson = new Gson();
-        builder().query("INSERT INTO 'item' (id, name, grade) VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, grade=excluded.grade;")
-                .parameter(p -> p.setInt(item.getId()).setString(gson.toJson(item.getNames())).setInt(item.getGrade()))
-                .insert().send();
-    }
-
     public void insertBaseItem(BaseItem item){
-        var insertId = "INSERT INTO IGNORE item_ids (id) VALUES (?)";
-        builder().query(insertId).parameter(param -> param.setInt(item.getId())).insert().send();
+        final var insertId = "INSERT OR IGNORE INTO item_ids (id) VALUES (?)";
+        builder().query(insertId).parameter(param -> param.setInt(item.getId()))
+                .insert()
+                .send();
 
-        var insertNames = """
-                            INSERT INTO languages (item_id, language_key, meta_tag, val)
+        final var insertNames = """
+                            INSERT INTO translations (item_id, language_key, meta_tag, val)
                             VALUES (?, ?, ?, ?)
-                            ON CONFLICT(item_id, meta_tag) DO UPDATE SET
-                            val=excluded.val;""";
+                            ON CONFLICT DO UPDATE SET
+                            val=excluded.val
+                            WHERE item_id = excluded.item_id AND language_key = excluded.language_key AND meta_tag = excluded.meta_tag;""";
         for (var name : item.getNames().entrySet()) {
             var lang = Languages.getByLocal(name.getKey());
-            builder().query(insertNames).parameter(param -> param.setInt(item.getId()).setInt(lang.ordinal()).setInt(MetaTags.NAME.ordinal()).setString(name.getValue())).insert().send();
+            builder().query(insertNames).parameter(param -> param.setInt(item.getId())
+                    .setInt(lang.ordinal())
+                    .setInt(MetaTags.NAME.ordinal())
+                    .setString(name.getValue()))
+                    .insert()
+                    .sendSync();
         }
 
-        var insertGrade = """
+        final var insertGrade = """
                           INSERT INTO metadata (item_id, meta_tag, val) 
                           VALUES (?, ?, ?)
-                          ON CONFLICT(item_id, meta_tag) DO UPDATE SET
-                          val=excluded.val;
+                          ON CONFLICT DO UPDATE SET
+                          val=excluded.val
+                          WHERE item_id = excluded.item_id AND meta_tag = excluded.meta_tag;
                           """;
-        builder().query(insertGrade).parameter(param -> param.setInt(item.getId()).setInt(item.getGrade())).insert().send();
+        builder().query(insertGrade).parameter(param -> param.setInt(item.getId())
+                .setInt(MetaTags.GRADE.ordinal())
+                .setInt(item.getGrade()))
+                .insert()
+                .sendSync();
     }
 
     @Override
