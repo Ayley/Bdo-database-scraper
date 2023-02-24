@@ -43,7 +43,8 @@ public final class BDOScrapper implements ScrapperApi {
 
             List<BaseItem> items = null;
 
-            for (var local : locals) {
+            for (var local : Arrays.copyOfRange(locals, 0, 3)) {
+                System.out.println(local);
                 List<BaseItem> tempItems = null;
                 try {
                     tempItems = parseAllBaseItems(local);
@@ -124,25 +125,24 @@ public final class BDOScrapper implements ScrapperApi {
 
     private void insertOrUpdateItemsIntoDatabase(List<BaseItem> items) {
         for (var item : items) {
-            //databaseApi.getBaseItemById(item.getId()).thenAccept(dbItem -> {
-            //    dbItem.ifPresent(item::merge);
-               itemTable.insertBaseItem(item);
-            //});
+            databaseApi.getBaseItemById(item.getId()).thenAccept(dbItem -> {
+                dbItem.ifPresent(item::merge);
+                itemTable.insertBaseItem(item);
+            });
         }
     }
 
     private void insertOrUpdateDetailedItemIntoDatabase(DetailedItem item) {
         databaseApi.getDetailedItemById(item.getId()).thenAccept(dbItem -> {
-           dbItem.ifPresent(item::merge);
+            dbItem.ifPresent(item::merge);
 
-           //todo insert
+            //todo insert
         });
     }
 
     ////////////////////////////////////////////////////////////////////////
 
     private List<BaseItem> parseAllBaseItems(String local) throws IOException {
-        System.out.println(local);
         var list = new ArrayList<BaseItem>();
 
         try {

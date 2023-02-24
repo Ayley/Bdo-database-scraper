@@ -25,6 +25,10 @@ public enum Languages {
         this.local = local;
     }
 
+    public String getLocal() {
+        return local;
+    }
+
     public static Languages getById(int id){
         return Languages.values()[id];
     }

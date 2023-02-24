@@ -19,13 +19,14 @@ public class BDOCodexScrapper {
     private HikariDataSource dataSource;
     private ItemTable itemTable;
 
-    public BDOCodexScrapper() throws IOException, SQLException, InterruptedException, ExecutionException {
+    public BDOCodexScrapper() throws IOException, SQLException{
         setupDatabase();
         setupTable();
-        scrapper = new BDOScrapper(null, itemTable);
+        scrapper = new BDOScrapper(itemTable, itemTable);
 
-        scrapper.updateCompleteDatabase().join();
-        System.out.println("Finished");
+        scrapper.updateDatabase("ru").join();
+        var item = itemTable.getBaseItemById(10007).join();
+        System.out.println(new Gson().newBuilder().setPrettyPrinting().create().toJson(item.get()));
     }
 
     private void setupTable() {
@@ -42,7 +43,7 @@ public class BDOCodexScrapper {
         SqlUpdater.builder(dataSource, SqLite.get()).execute();
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException, SQLException, ExecutionException {
+    public static void main(String[] args) throws IOException, SQLException {
         new BDOCodexScrapper();
     }
 

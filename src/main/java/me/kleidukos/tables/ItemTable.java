@@ -55,11 +55,49 @@ public class ItemTable extends QueryFactory implements DatabaseApi {
 
     @Override
     public CompletableFuture<Optional<BaseItem>> getBaseItemById(int id) {
-        var query = """
-                    SELECT languages.val, metadata.val FROM languages, metadata
-                    WHERE languages.item_id = ? AND metadata.item_id = languages.item_id;
+        var properties = """
+                    SELECT metadata.val, item_ids.id FROM metadata, item_ids
+                    WHERE item_ids.id = ? AND metadata.item_id = item_ids.id AND meta_tag = ?
                     """;
-        return null;
+
+        var query = """
+                    select item_ids.id, translations.val, translations.language_key, translations.meta_tag FROM item_ids, translations
+                    WHERE item_ids.id = ? and translations.item_id = item_ids.id and translations.meta_tag = 0 and translations.language_key = ?;
+                    """;
+
+        return CompletableFuture.supplyAsync(() -> {
+            var grade = builder(Integer.class)
+                    .query(properties)
+                    .parameter(param -> param.setInt(id)
+                            .setInt(1))
+                    .readRow(rs -> rs.getInt("val"))
+                    .firstSync()
+                    .orElseGet(() -> 0);
+
+
+            var levelRestriction = builder(Integer.class)
+                    .query(properties)
+                    .parameter(param -> param.setInt(id)
+                            .setInt(2))
+                    .readRow(rs -> rs.getInt("val"))
+                    .firstSync()
+                    .orElseGet(() -> 0);
+
+            var item = new BaseItem(id, grade, levelRestriction);
+
+            for (var local : Languages.values()){
+                var val = builder(String.class)
+                        .query(query)
+                        .parameter(param -> param.setInt(id)
+                                .setInt(local.ordinal()))
+                        .readRow(rs -> rs.getString("val"))
+                        .firstSync();
+
+                val.ifPresent(s -> item.addName(local.getLocal(), s));
+            }
+
+            return Optional.of(item);
+        });
     }
 
     @Override

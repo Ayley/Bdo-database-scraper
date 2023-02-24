@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="items.sqlite" uuid="bc8b47ff-bf34-4971-9c69-617150baa314">
+    <data-source source="LOCAL" name="items" uuid="b8d39f32-c0d4-4b79-9e09-0e5ea6dbe2ba">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:items.sqlite</jdbc-url>
+      <jdbc-url>jdbc:sqlite:C:\Users\larsh\IdeaProjects\Bdo-database-scraper\items.sqlite</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
+      <libraries>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.40.1/sqlite-jdbc-3.40.1.jar</url>
+        </library>
+      </libraries>
     </data-source>
   </component>
 </project>
