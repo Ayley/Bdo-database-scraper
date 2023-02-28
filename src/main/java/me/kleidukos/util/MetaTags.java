@@ -17,5 +17,9 @@ public enum MetaTags {
     EVASION,
     HIDDEN_EVASION,
     DAMAGE_REDUCTION,
-    HIDDEN_DAMAGE_REDUCTION
+    HIDDEN_DAMAGE_REDUCTION;
+
+    public static MetaTags getById(int id){
+        return values()[id];
+    }
 }

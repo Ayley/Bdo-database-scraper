@@ -29,11 +29,9 @@ public final class BDOScrapper implements ScrapperApi {
             {"de", "us", "fr", "ru", "es", "sp", "pt", "jp", "kr",
                     "cn", "tw", "th", "tr", "id"};
 
-    private final DatabaseApi databaseApi;
     private final ItemTable itemTable;
 
-    public BDOScrapper(DatabaseApi databaseApi, ItemTable itemTable) {
-        this.databaseApi = databaseApi;
+    public BDOScrapper(ItemTable itemTable) {
         this.itemTable = itemTable;
     }
 
@@ -90,7 +88,7 @@ public final class BDOScrapper implements ScrapperApi {
     @Override
     public CompletableFuture<DetailedItem> upgradeBaseItem(BaseItem item, boolean tryGetFromDB) {
         return CompletableFuture.supplyAsync(() -> {
-            var dbItem = databaseApi.getDetailedItemById(item.getId()).join();
+            var dbItem = itemTable.getDetailedItemById(item.getId()).join();
 
             if (dbItem.isPresent())
                 return dbItem.get();
@@ -125,15 +123,18 @@ public final class BDOScrapper implements ScrapperApi {
 
     private void insertOrUpdateItemsIntoDatabase(List<BaseItem> items) {
         for (var item : items) {
-            databaseApi.getBaseItemById(item.getId()).thenAccept(dbItem -> {
-                dbItem.ifPresent(item::merge);
-                itemTable.insertBaseItem(item);
-            });
+            var dbItem = itemTable.getBaseItemById(item.getId()).join();
+            item.merge(dbItem.get());
+
+            if (item.getId() == 10007)
+                System.out.println(new Gson().newBuilder().setPrettyPrinting().create().toJson(items));
+
+            itemTable.insertBaseItem(item);
         }
     }
 
     private void insertOrUpdateDetailedItemIntoDatabase(DetailedItem item) {
-        databaseApi.getDetailedItemById(item.getId()).thenAccept(dbItem -> {
+        itemTable.getDetailedItemById(item.getId()).thenAccept(dbItem -> {
             dbItem.ifPresent(item::merge);
 
             //todo insert

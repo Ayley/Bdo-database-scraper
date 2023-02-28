@@ -6,6 +6,7 @@ import de.chojo.sadu.databases.SqLite;
 import de.chojo.sadu.datasource.DataSourceCreator;
 import de.chojo.sadu.updater.SqlUpdater;
 import me.kleidukos.tables.ItemTable;
+import me.kleidukos.util.Languages;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,14 +20,13 @@ public class BDOCodexScrapper {
     private HikariDataSource dataSource;
     private ItemTable itemTable;
 
-    public BDOCodexScrapper() throws IOException, SQLException{
+    public BDOCodexScrapper() throws IOException, SQLException {
         setupDatabase();
         setupTable();
-        scrapper = new BDOScrapper(itemTable, itemTable);
+        scrapper = new BDOScrapper(itemTable);
 
-        scrapper.updateDatabase("ru").join();
-        var item = itemTable.getBaseItemById(10007).join();
-        System.out.println(new Gson().newBuilder().setPrettyPrinting().create().toJson(item.get()));
+        var item = itemTable.getBaseItemByNameExact("Langschwert: Seles").join().get();
+        System.out.println(new Gson().newBuilder().setPrettyPrinting().create().toJson(item));
     }
 
     private void setupTable() {
@@ -38,7 +38,7 @@ public class BDOCodexScrapper {
         if(!file.exists())
             Files.createFile(file.toPath());
 
-        dataSource = DataSourceCreator.create(SqLite.get()).configure(conf -> conf.path(new java.io.File("items.sqlite"))).create().withMaximumPoolSize(1).build();
+        dataSource = DataSourceCreator.create(SqLite.get()).configure(conf -> conf.path(new java.io.File("items.sqlite"))).create().withMaximumPoolSize(4).build();
 
         SqlUpdater.builder(dataSource, SqLite.get()).execute();
     }
